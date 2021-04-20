@@ -5,6 +5,7 @@
 #include "hittable_list.h"
 #include "material.h"
 #include "sphere.h"
+#include "BVH_Node.h"
 
 #include "stb_image/stb_image.h"
 #include "stb_image/stb_image_write.h"
@@ -13,20 +14,45 @@
 #include <vector>
 
 
-glm::vec3 ray_color(const ray& r, const hittable& world , int depth)
+glm::vec3 ray_color(const ray& r, const BVH_Node& root , int depth)
 {
 
     if (depth <= 0)
         return glm::vec3(0.0f);
 
     hit_record rec;
-    if (world.hit(r, 0.001, infinity, rec))
+    if (root.hit(r, 0.001, infinity, rec))
     {
         ray scattered;
         glm::vec3 attenuation;
         if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))
         {
-            return attenuation * ray_color(scattered, world, depth - 1);
+            return attenuation * ray_color(scattered, root, depth - 1);
+        }
+        return glm::vec3(0.0f);
+
+    }
+    glm::vec3 res;
+    glm::vec3 dir = glm::normalize(r.dir);
+    auto t = 0.5f * (dir.y + 1.0f);
+    res = (1.0f - t) * glm::vec3(1.0f) + t * glm::vec3(0.5f, 0.7f, 1.0f);
+    return res;
+}
+
+glm::vec3 ray_color(const ray& r, const hittable_list& root, int depth)
+{
+
+    if (depth <= 0)
+        return glm::vec3(0.0f);
+
+    hit_record rec;
+    if (root.hit(r, 0.001, infinity, rec))
+    {
+        ray scattered;
+        glm::vec3 attenuation;
+        if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+        {
+            return attenuation * ray_color(scattered, root, depth - 1);
         }
         return glm::vec3(0.0f);
 
@@ -44,7 +70,7 @@ hittable_list random_scene() {
     auto ground_material = new lambertian(glm::vec3(0.5, 0.5, 0.5));
     world.add(new sphere(glm::vec3(0,-1000,0), 1000, ground_material));
 
-    int limit = 11;
+    int limit = 3;
 
     for (int a = -limit; a < limit; a++) {
         for (int b = -limit; b < limit; b++) {
@@ -87,19 +113,22 @@ int  main()
 {
 
     //Image
-    const auto aspectRatio = 16.0f / 9.0f;
-    const int imgWidth = 1280;
+    const auto aspectRatio = 1 / 1;
+    const int imgWidth = 400;
     const int imgHeight = (int)(imgWidth/aspectRatio);
-    const int number_of_samples = 5;
+    const int number_of_samples = 10;
     const int maxDepth = 10;
 
     //World
     hittable_list world = random_scene();
 
+    BVH_Node root(world, 0, 1);
+    
+
     //Camera
     camera cam(glm::vec3(8, 2, 10), glm::vec3(8, 1, 0), glm::vec3(0, 1, 0), 45, aspectRatio);
 
-
+    auto start = clock();
     
 
     std::vector<unsigned char> img;
@@ -124,8 +153,14 @@ int  main()
         }
     }
 
-    createJPG("res/images/output3.jpg", imgWidth, imgHeight, 3, img, 100);
+    int result = stbi_write_png("res/images/output.png", imgWidth, imgHeight, 3, img.data(), imgWidth * 3);
+    std::cerr << result << "\n";
     std::cerr << "\nDone.\n";
+
+    auto end = clock();
+
+    std::cerr << "Time Elapsed " << ((double)(end - start)) / CLOCKS_PER_SEC << "s\n";
+
     return 0;
 
 }

@@ -146,6 +146,8 @@
     <ClCompile Include="src\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AxisAllignedBoundingBox.h" />
+    <ClInclude Include="src\BVH_Node.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\color.h" />
     <ClInclude Include="src\external\stb_image\stb_image.h" />

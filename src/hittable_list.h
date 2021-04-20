@@ -18,8 +18,10 @@ public:
 
     virtual bool hit(
         const ray& r, float t_min, float t_max, hit_record& rec) const override;
+    virtual bool bounding_box(
+        float time0, float time1, AxisAllignedBoundingBox& outbox) const override;
 
-private:
+public:
     std::vector<hittable*> objects;
 };
 
@@ -38,4 +40,18 @@ bool hittable_list::hit(const ray& r, float t_min, float t_max, hit_record& rec)
     }
 
     return hit_anything;
+}
+
+bool hittable_list::bounding_box(float time0, float time1, AxisAllignedBoundingBox& outbox)const {
+    if (objects.empty())
+        return false;
+    AxisAllignedBoundingBox tempBox;
+    bool first = true;
+    for (auto object : objects)
+    {
+        if (!object->bounding_box(time0, time1, tempBox))return false;
+        if (first)outbox = surroundingBox(outbox, tempBox), first = false;
+        else outbox = tempBox;
+    }
+    return true;
 }
