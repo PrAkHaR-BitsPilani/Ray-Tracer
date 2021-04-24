@@ -6,6 +6,10 @@
 #include "material.h"
 #include "sphere.h"
 #include "BVH_Node.h"
+#include "rect.h"
+#include "box.h"
+#include "flip_face.h"
+#include "transform.h"
 
 #include "stb_image/stb_image.h"
 #include "stb_image/stb_image_write.h"
@@ -25,18 +29,20 @@ glm::vec3 ray_color(const ray& r, const BVH_Node& root , int depth)
     {
         ray scattered;
         glm::vec3 attenuation;
+        glm::vec3 emitted = rec.mat_ptr->emitted(r , rec , rec.u, rec.v, rec.p);
         if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))
         {
-            return attenuation * ray_color(scattered, root, depth - 1);
+            return emitted + attenuation * ray_color(scattered, root, depth - 1);
         }
-        return glm::vec3(0.0f);
+        return emitted;
 
     }
-    glm::vec3 res;
+    return glm::vec3(0);
+    /*glm::vec3 res;
     glm::vec3 dir = glm::normalize(r.dir);
     auto t = 0.5f * (dir.y + 1.0f);
     res = (1.0f - t) * glm::vec3(1.0f) + t * glm::vec3(0.5f, 0.7f, 1.0f);
-    return res;
+    return res;*/
 }
 
 glm::vec3 ray_color(const ray& r, const hittable_list& root, int depth)
@@ -50,18 +56,52 @@ glm::vec3 ray_color(const ray& r, const hittable_list& root, int depth)
     {
         ray scattered;
         glm::vec3 attenuation;
+        glm::vec3 emitted = rec.mat_ptr->emitted(r, rec, rec.u, rec.v, rec.p);
         if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))
         {
-            return attenuation * ray_color(scattered, root, depth - 1);
+            return emitted + attenuation * ray_color(scattered, root, depth - 1);
         }
-        return glm::vec3(0.0f);
+        return emitted;
 
     }
-    glm::vec3 res;
+    return glm::vec3(0);
+    /*glm::vec3 res;
     glm::vec3 dir = glm::normalize(r.dir);
     auto t = 0.5f * (dir.y + 1.0f);
     res = (1.0f - t) * glm::vec3(1.0f) + t * glm::vec3(0.5f, 0.7f, 1.0f);
-    return res;
+    return res;*/
+}
+
+hittable_list cornellBox() {
+    hittable_list world;
+
+    auto red = new lambertian(glm::vec3(0.65, 0.05, 0.05));
+    auto green = new lambertian(glm::vec3(0.12, 0.45, 0.15));
+    auto light = new diffuse_light(glm::vec3(15));
+    auto white = new lambertian(glm::vec3(0.73));
+    auto white_metal = new metal(glm::vec3(1),0);
+
+    world.add(new yz_rect(0, 555, 0, 555, 555, green));
+    world.add(new yz_rect(0, 555, 0, 555, 0, red));
+    world.add(new flip_face(new xz_rect(213, 343, 227, 332, 545, light)));
+    /*d_list[i++] = new xz_rect(10, 110, 445, 545, 545, light);
+    d_list[i++] = new xz_rect(445, 545, 10, 110, 554, light);
+    d_list[i++] = new xz_rect(445, 545, 445, 545, 554, light);*/
+    world.add(new xz_rect(0, 555, 0, 555, 0, white));
+    world.add(new xz_rect(0, 555, 0, 555, 555, white));
+    world.add(new xy_rect(0, 555, 0, 555, 555, white));
+
+    //d_list[i++] = new sphere(glm::vec3(50, 10, 30), 10, white);
+
+    world.add(new Translate(
+                new RotateY(
+                    new box(glm::vec3(0, 0, 0), glm::vec3(165, 165, 165), white),-18),glm::vec3(130,0,65)));
+    world.add(new Translate(
+                new RotateY(
+                    new box(glm::vec3(0, 0, 0), glm::vec3(165, 330, 165), white_metal), 15), glm::vec3(265,0,295)));
+
+    return world;
+
 }
 
 hittable_list random_scene() {
@@ -113,20 +153,20 @@ int  main()
 {
 
     //Image
-    const auto aspectRatio = 1 / 1;
+    const auto aspectRatio = 1;// 3840.0f / 2160.0f;
     const int imgWidth = 400;
     const int imgHeight = (int)(imgWidth/aspectRatio);
     const int number_of_samples = 10;
-    const int maxDepth = 10;
+    const int maxDepth = 5;
 
     //World
-    hittable_list world = random_scene();
+    hittable_list world = cornellBox();
 
     BVH_Node root(world, 0, 1);
     
 
     //Camera
-    camera cam(glm::vec3(8, 2, 10), glm::vec3(8, 1, 0), glm::vec3(0, 1, 0), 45, aspectRatio);
+    camera cam(glm::vec3(278, 278, -800), glm::vec3(278, 278, 0), glm::vec3(0, 1, 0), 40, aspectRatio);
 
     auto start = clock();
     
@@ -143,7 +183,11 @@ int  main()
                 auto u = float(i + random_float()) / (imgWidth - 1);
                 auto v = float(j + random_float()) / (imgHeight - 1);
                 ray r = cam.get_ray(u, v);
-                pixel_color += ray_color(r, world, maxDepth);
+                glm::vec3 colorAdd = ray_color(r, world, maxDepth);
+                if (colorAdd.r != colorAdd.r)colorAdd.r = 0;
+                if (colorAdd.g != colorAdd.g)colorAdd.g = 0;
+                if (colorAdd.b != colorAdd.b)colorAdd.b = 0;
+                pixel_color += colorAdd;
             }
             img.push_back(255 * clamp(sqrt(pixel_color.r/number_of_samples), 0, 0.999f));
             img.push_back(255 * clamp(sqrt(pixel_color.g/number_of_samples), 0, 0.999f));

@@ -11,6 +11,8 @@ struct hit_record {
     glm::vec3 normal;
     material* mat_ptr;
     float t;   
+    float u;
+    float v;
     bool front_face;
 
     inline void set_face_normal(const ray& r, const glm::vec3& outward_normal) {
