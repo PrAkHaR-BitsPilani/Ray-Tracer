@@ -7,7 +7,9 @@
 #include <memory>
 #include <vector>
 
-
+/// <summary>
+/// Collection of objects.
+/// </summary>
 class hittable_list : public hittable {
 public:
     hittable_list() {}

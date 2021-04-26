@@ -3,7 +3,9 @@
 #include "rtweekend.h"
 
 #include "hittable.h"
-
+/// <summary>
+/// A rectangle alligned to the XY plane which can be placed in the scene.
+/// </summary>
 class xy_rect : public hittable {
 public:
      xy_rect() {}
@@ -30,7 +32,9 @@ public:
     material* mp;
     float x0, x1, y0, y1, k;
 };
-
+/// <summary>
+/// A rectangle alligned to the XZ plane which can be placed in the scene.
+/// </summary>
 class xz_rect : public hittable {
 public:
      xz_rect() {}
@@ -57,7 +61,9 @@ public:
     material* mp;
     float x0, x1, z0, z1, k;
 };
-
+/// <summary>
+/// A rectangle alligned to the YZ plane which can be placed in the scene.
+/// </summary>
 class yz_rect : public hittable {
 public:
      yz_rect() {}

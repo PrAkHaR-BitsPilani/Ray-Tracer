@@ -2,7 +2,9 @@
 
 #include "rtweekend.h"
 
-
+/// <summary>
+/// Simple camera which can be positioned anywhere.
+/// </summary>
 class camera {
 public:
     camera(glm::vec3 cameraPos , glm::vec3 target , glm::vec3 worldUp , float vfov , float aspect_ratio) {
@@ -22,7 +24,9 @@ public:
         vertical = viewport_height * v;
         lower_left_corner = origin - horizontal / 2.0f - vertical / 2.0f + n ;
     }
-
+    /// <summary>
+    /// Returns the ray starting from the camera and ending at a particular pixel on he projection window.
+    /// </summary>
     ray get_ray(float s, float t) const {
         return ray(origin, lower_left_corner + s * horizontal + t * vertical - origin);
     }

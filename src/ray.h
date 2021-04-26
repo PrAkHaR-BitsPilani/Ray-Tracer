@@ -3,7 +3,9 @@
 
 #include "glm/glm.hpp"
 
-
+/// <summary>
+/// Represents a ray of the form A + Bt where A is the origin vector and B is the direction vector.
+/// </summary>
 class ray {
 public:
 

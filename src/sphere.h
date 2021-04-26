@@ -4,7 +4,9 @@
 
 #include "hittable.h"
 
-
+/// <summary>
+/// A sphere object which can be placed in the scene.
+/// </summary>
 class sphere : public hittable {
 public:
     sphere()

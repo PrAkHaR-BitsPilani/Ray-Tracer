@@ -21,7 +21,9 @@ struct hit_record {
     }
 };
 
-
+/// <summary>
+/// An abstract class represting a object which can be placed in a scene.
+/// </summary>
 class hittable {
 public:
     virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const = 0;

@@ -7,7 +7,10 @@
 
 struct hit_record;
 
-
+/// <summary>
+/// Materials which can be integrated with objects. 
+/// They determine the color of a object.
+/// </summary>
 class material {
 public:
     virtual bool scatter(

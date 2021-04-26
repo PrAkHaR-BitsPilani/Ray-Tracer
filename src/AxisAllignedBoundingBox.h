@@ -2,6 +2,9 @@
 
 #include "rtweekend.h"
 
+/// <summary>
+/// This is an abstraction of a bounding volume which is alligned to the X,Y and Z axes.
+/// </summary>
 class AxisAllignedBoundingBox {
 
 public:
@@ -9,7 +12,9 @@ public:
 		: minimum(glm::vec3(0)), maximum(glm::vec3(0)) {}
 	AxisAllignedBoundingBox(const glm::vec3& mini, const glm::vec3& maxi)
 		:minimum(mini), maximum(maxi) {}
-
+	/// <summary>
+	/// Checks whether a ray hits the current box.
+	/// </summary>
 	bool hit(const ray& r, float t_min, float t_max) const
 	{
 		for (int a = 0; a < 3; a++) {
@@ -35,7 +40,9 @@ public:
 	glm::vec3 minimum;
 	glm::vec3 maximum;
 };
-
+/// <summary>
+/// Combines two bounding volumes into one.
+/// </summary>
 AxisAllignedBoundingBox surroundingBox(AxisAllignedBoundingBox& box0, AxisAllignedBoundingBox& box1)
 {
 	glm::vec3 start(fmin(box0.minimum[0], box1.minimum[0]), fmin(box0.minimum[1], box1.minimum[1]), fmin(box0.minimum[2], box1.minimum[2]));

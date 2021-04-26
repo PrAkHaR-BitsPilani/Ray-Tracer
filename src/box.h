@@ -8,6 +8,9 @@
 #include "hittable_list.h"
 #include "rect.h"
 
+/// <summary>
+/// A box object which can be placed in the scene.
+/// </summary>
 class box : public hittable {
 
 public:

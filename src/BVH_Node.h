@@ -9,7 +9,9 @@ inline bool box_compare(hittable* a, hittable* b, int axis);
 inline bool box_x_compare(hittable* a, hittable* b);
 inline bool box_y_compare(hittable* a, hittable* b);
 inline bool box_z_compare(hittable* a, hittable* b);
-
+/// <summary>
+/// Represents a node in the Bounding Volume Hierarchy tree.
+/// </summary>
 class BVH_Node : public hittable {
 public:
 	BVH_Node();

@@ -2,7 +2,9 @@
 
 #include "rtweekend.h"
 #include "hittable.h"
-
+/// <summary>
+/// Flips the noramls of a object which can affect the ray-hit interactions.
+/// </summary>
 class flip_face : public hittable {
 
 public:
