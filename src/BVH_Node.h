@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include "hittable_list.h"
 #include "AxisAllignedBoundingBox.h"
@@ -19,12 +18,14 @@ public:
 		: BVH_Node(list.objects, 0, list.objects.size(), time_0, time_1) {}
 
 	BVH_Node(std::vector<hittable*> list, size_t start, size_t end, float time_0, float time_1) {
+		
 		auto objects = list;
 
 		int axis = random_int(0, 2);
 		auto comparator = (axis == 0) ? box_x_compare
 			: (axis == 1) ? box_y_compare
 			: box_z_compare;
+
 		size_t object_span = end - start;
 
 		if (object_span == 1)
@@ -46,7 +47,7 @@ public:
 			std::sort(objects.begin() + start, objects.begin() + end, comparator);
 			auto mid = start + object_span / 2;
 			left = new BVH_Node(objects, start, mid, time_0, time_1);
-			right = new BVH_Node(objects, mid + 1, end, time_0, time_1);
+			right = new BVH_Node(objects, mid, end, time_0, time_1);
 		}
 
 		AxisAllignedBoundingBox aLeft, aRight;

@@ -64,12 +64,12 @@ glm::vec3 ray_color(const ray& r, const hittable_list& root, int depth)
         return emitted;
 
     }
-    return glm::vec3(0);
-    /*glm::vec3 res;
+    //return glm::vec3(0);
+    glm::vec3 res;
     glm::vec3 dir = glm::normalize(r.dir);
     auto t = 0.5f * (dir.y + 1.0f);
     res = (1.0f - t) * glm::vec3(1.0f) + t * glm::vec3(0.5f, 0.7f, 1.0f);
-    return res;*/
+    return res;
 }
 
 hittable_list cornellBox() {
@@ -98,10 +98,23 @@ hittable_list cornellBox() {
                     new box(glm::vec3(0, 0, 0), glm::vec3(165, 165, 165), white),-18),glm::vec3(130,0,65)));
     world.add(new Translate(
                 new RotateY(
-                    new box(glm::vec3(0, 0, 0), glm::vec3(165, 330, 165), white_metal), 15), glm::vec3(265,0,295)));
+                    new box(glm::vec3(0, 0, 0), glm::vec3(165, 330, 165), white), 15), glm::vec3(265,0,295)));
 
     return world;
 
+}
+
+hittable_list simpleScene()
+{
+    hittable_list world;
+    auto light = new diffuse_light(glm::vec3(15));
+    auto light2 = new diffuse_light(glm::vec3(15,0,0));
+    auto light3 = new diffuse_light(glm::vec3(15, 15, 0));
+    world.add(new xy_rect(-5, 5, -5, 5, 0, light));
+    world.add(new xz_rect(-5, 5, -5, 5, 0, light2));
+    world.add(new yz_rect(-5, 5, -5, 5, 0, light3));
+    return world;
+  
 }
 
 hittable_list random_scene() {
@@ -136,15 +149,15 @@ hittable_list random_scene() {
         }
     }
 
-    /*auto material2 = new lambertian(glm::vec3(0.4, 0.2, 0.1));
-    world.add(new sphere(glm::vec3(-4, 1, 0), 1.0, material2));*/
+    auto material2 = new diffuse_light(glm::vec3(15));
+    world.add(new sphere(glm::vec3(0, 1, 0), 1.0, material2));
 
-    auto material3 = new metal(glm::vec3(0.7, 0.6, 0.5), 0.0);
+    /*auto material3 = new metal(glm::vec3(0.7, 0.6, 0.5), 0.0);
     world.add(new sphere(glm::vec3(4, 1, 0), 1.0, material3));
     world.add(new sphere(glm::vec3(6, 1, 0), 1.0, material3));
     world.add(new sphere(glm::vec3(8, 1, 0), 1.0, material3));
     world.add(new sphere(glm::vec3(10, 1, 0), 1.0, material3));
-    world.add(new sphere(glm::vec3(12, 1, 0), 1.0, material3));
+    world.add(new sphere(glm::vec3(12, 1, 0), 1.0, material3));*/
 
     return world;
 }
@@ -162,10 +175,11 @@ int  main()
     //World
     hittable_list world = cornellBox();
 
-    BVH_Node root(world, 0, 1);
+    BVH_Node root(world.objects,0,world.objects.size(), 0, 1);
     
 
     //Camera
+    //camera cam(glm::vec3(15, 10, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 45, aspectRatio);
     camera cam(glm::vec3(278, 278, -800), glm::vec3(278, 278, 0), glm::vec3(0, 1, 0), 40, aspectRatio);
 
     auto start = clock();
@@ -183,7 +197,7 @@ int  main()
                 auto u = float(i + random_float()) / (imgWidth - 1);
                 auto v = float(j + random_float()) / (imgHeight - 1);
                 ray r = cam.get_ray(u, v);
-                glm::vec3 colorAdd = ray_color(r, world, maxDepth);
+                glm::vec3 colorAdd = ray_color(r, root, maxDepth);
                 if (colorAdd.r != colorAdd.r)colorAdd.r = 0;
                 if (colorAdd.g != colorAdd.g)colorAdd.g = 0;
                 if (colorAdd.b != colorAdd.b)colorAdd.b = 0;
@@ -192,7 +206,6 @@ int  main()
             img.push_back(255 * clamp(sqrt(pixel_color.r/number_of_samples), 0, 0.999f));
             img.push_back(255 * clamp(sqrt(pixel_color.g/number_of_samples), 0, 0.999f));
             img.push_back(255 * clamp(sqrt(pixel_color.b/number_of_samples), 0, 0.999f));
-            
 
         }
     }

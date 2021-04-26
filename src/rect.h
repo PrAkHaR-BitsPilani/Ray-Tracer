@@ -17,7 +17,7 @@ public:
      virtual bool bounding_box(float time0, float time1, AxisAllignedBoundingBox& output_box) const override {
         // The bounding box must have non-zero width in each dimension, so pad the Z
         // dimension a small amount.
-        output_box = AxisAllignedBoundingBox(glm::vec3(x0, y0, k - 0.1), glm::vec3(x1, y1, k + 0.1));
+        output_box = AxisAllignedBoundingBox(glm::vec3(x0, y0, k - 0.001), glm::vec3(x1, y1, k + 0.001));
         return true;
     }
 
@@ -44,7 +44,7 @@ public:
      virtual bool bounding_box(float time0, float time1, AxisAllignedBoundingBox& output_box) const override {
         // The bounding box must have non-zero width in each dimension, so pad the Y
         // dimension a small amount.
-        output_box = AxisAllignedBoundingBox(glm::vec3(x0, k - 0.1, z0), glm::vec3(x1, k + 0.1, z1));
+        output_box = AxisAllignedBoundingBox(glm::vec3(x0, k - 0.001, z0), glm::vec3(x1, k + 0.001, z1));
         return true;
     }
 
@@ -71,7 +71,7 @@ public:
      virtual bool bounding_box(float time0, float time1, AxisAllignedBoundingBox& output_box) const override {
         // The bounding box must have non-zero width in each dimension, so pad the X
         // dimension a small amount.
-        output_box = AxisAllignedBoundingBox(glm::vec3(k - 0.1, y0, z0), glm::vec3(k + 0.1, y1, z1));
+        output_box = AxisAllignedBoundingBox(glm::vec3(k - 0.001, y0, z0), glm::vec3(k + 0.001, y1, z1));
         return true;
     }
 
