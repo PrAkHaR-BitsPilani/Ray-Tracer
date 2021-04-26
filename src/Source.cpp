@@ -98,7 +98,7 @@ hittable_list cornellBox() {
                     new box(glm::vec3(0, 0, 0), glm::vec3(165, 165, 165), white),-18),glm::vec3(130,0,65)));
     world.add(new Translate(
                 new RotateY(
-                    new box(glm::vec3(0, 0, 0), glm::vec3(165, 330, 165), white), 15), glm::vec3(265,0,295)));
+                    new box(glm::vec3(0, 0, 0), glm::vec3(165, 330, 165), white_metal), 15), glm::vec3(265,0,295)));
 
     return world;
 
@@ -167,10 +167,10 @@ int  main()
 
     //Image
     const auto aspectRatio = 1;// 3840.0f / 2160.0f;
-    const int imgWidth = 400;
+    const int imgWidth = 600;
     const int imgHeight = (int)(imgWidth/aspectRatio);
-    const int number_of_samples = 10;
-    const int maxDepth = 5;
+    const int number_of_samples = 25;
+    const int maxDepth = 10;
 
     //World
     hittable_list world = cornellBox();
